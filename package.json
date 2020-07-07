@@ -1,0 +1,11 @@
+{
+  "name": "osiris",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "devDependencies": {
+    "electron": "^9.1.0"
+  },
+  "scripts": {
+    "start": "electron ."
+  }
+}
