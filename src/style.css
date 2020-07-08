@@ -1,3 +1,18 @@
-body{
-    color: orange;
+.header {
+    color: black;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    padding-top: 25%;
+}
+
+body {
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100% 100%;
+    background-image: url('background-image.jpg');
+}
+
+.window {
+    -webkit-app-region: drag;
+    height: 100vh;
 }
