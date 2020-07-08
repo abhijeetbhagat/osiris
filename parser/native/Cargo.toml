@@ -1,0 +1,25 @@
+[package]
+name = "parser"
+version = "0.1.0"
+authors = ["abhi <abhijeet.bhagat@gmx.com>"]
+license = "MIT"
+build = "build.rs"
+edition = "2018"
+exclude = ["artifacts.json", "index.node"]
+
+[lib]
+name = "parser"
+crate-type = ["cdylib"]
+
+[build-dependencies]
+neon-build = "0.4.0"
+
+[dependencies]
+erased-serde = "0.3.12"
+either = {version = "1.5.3", features=["serde"]}
+memmap = "0.7.0"
+neon = "0.4.0"
+neon-serde = "0.4.0"
+serde_json = "1.0.56"
+serde_derive = "1.0.114"
+serde = {version = "1.0.114", features=["derive"]}
