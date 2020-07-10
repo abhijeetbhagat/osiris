@@ -30,13 +30,16 @@ jobs:
 
      - name: Install yarn dependencies
        run: yarn install
+      
+     - name: install node tools
+       run: npm install --global --production windows-build-tools
+     
+     - name: install
+     - run : yarn global add neon-cli
         
      - name: build neon dependencies 
        run: neon build --release
     
-     - name: install node tools
-       run: npm install --global --production windows-build-tools
-
      - name: Rebuild Project
        run: yarn --force
     
