@@ -21,7 +21,7 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name : checkout master
-    - uses: actions/checkout@master
+      uses: actions/checkout@master
       
     - name: Set up Node.js
       uses: actions/setup-node@master
@@ -29,16 +29,16 @@ jobs:
           node-version: 12.18.0
 
     - name: Install yarn dependencies
-    - run: yarn install
+      run: yarn install
         
     - name: build neon dependencies 
-    - run: neon build --release
+      run: neon build --release
     
     - name: install node tools
-    - run: npm install --global --production windows-build-tools
+      run: npm install --global --production windows-build-tools
 
     - name: Rebuild Project
-    - run: yarn --force
+      run: yarn --force
     
       
 
