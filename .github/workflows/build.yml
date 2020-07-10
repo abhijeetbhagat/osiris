@@ -35,7 +35,7 @@ jobs:
        run: npm install --global --production windows-build-tools
      
      - name: install
-     - run : yarn global add neon-cli
+       run : yarn global add neon-cli
         
      - name: build neon dependencies 
        run: neon build --release
