@@ -1,24 +1,24 @@
 extern crate serde;
 extern crate serde_derive;
-use crate::parsing::atoms::{mvhd::Mvhd, trak::Trak};
+use crate::parsing::atoms::{tkhd::Tkhd};
 use crate::parsing::atoms::parse::{atom_get, AtomParse};
 use crate::parsing::error::ParserError;
 use crate::utils::reader::StreamReader;
 use serde::Serialize;
 
 #[derive(Serialize)]
-pub struct Moov {
+pub struct Trak {
     name: String,
     len: usize,
     atoms: Vec<Box<dyn erased_serde::Serialize>>,
 }
 
-impl AtomParse for Moov {
+impl AtomParse for Trak {
     fn parse(my_size: usize, reader: &StreamReader) -> Result<Self, ParserError> {
         let mut atoms: Vec<Box<dyn erased_serde::Serialize>> = vec![];
-        println!("moov: reader pos {} mysize {}", reader.pos(), my_size);
+        println!("trak: reader pos {} mysize {}", reader.pos(), my_size);
         let my_size = my_size + reader.pos() - 8;
-        println!("moov: mysize {}", my_size);
+        println!("trak: mysize {}", my_size);
 
         while reader.pos() < my_size {
             let (atom_len, atom) = (
@@ -31,20 +31,19 @@ impl AtomParse for Moov {
             );
 
             match atom {
-                "mvhd" => atoms.push(Box::new(atom_get::<Mvhd>(atom_len, reader)?)),
-                "trak" => atoms.push(Box::new(atom_get::<Trak>(atom_len, reader)?)),
+                "tkhd" => atoms.push(Box::new(atom_get::<Tkhd>(atom_len, reader)?)),
                 _ => {
                     println!("atom {} not supported", atom);
                     reader.skip(atom_len - 8);
-                    println!("moov: reader pos after skipping {}", reader.pos());
+                    println!("trak: reader pos after skipping {}", reader.pos());
                 }
             }
-            println!("moov: atom len: {}, atom: {}", atom_len, atom);
+            println!("trak: atom len: {}, atom: {}", atom_len, atom);
         }
 
-        println!("returning moov");
-        Ok(Moov {
-            name: "moov".into(),
+        println!("returning trak");
+        Ok(Trak {
+            name: "trak".into(),
             len: my_size,
             atoms,
         })
