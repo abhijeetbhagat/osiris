@@ -27,18 +27,15 @@ jobs:
        uses: actions/setup-node@master
        with:
           node-version: 12.18.0
-
-     - name: Install yarn dependencies
-       run: yarn install
       
      - name: install node tools
        run: npm install --global --production windows-build-tools@4.0.0
      
      - name: install
        run : yarn global add neon-cli
-        
-     - name: build neon dependencies 
-       run: neon build --release
+              
+     - name: Install yarn dependencies
+       run: yarn install
     
      - name: Rebuild Project
        run: yarn --force
