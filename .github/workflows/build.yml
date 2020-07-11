@@ -6,9 +6,9 @@ name: build
 # events but only for the master branch
 on:
   push:
-    branches: [ github_action_workflow ]
+    branches: [ master ]
   pull_request:
-    branches: [ github_action_workflow ]
+    branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -27,16 +27,16 @@ jobs:
        uses: actions/setup-node@master
        with:
           node-version: 12.18.0
-
+      
+     - name: install node tools
+       run: npm install --global --production windows-build-tools@4.0.0
+     
+     - name: install
+       run : yarn global add neon-cli
+              
      - name: Install yarn dependencies
        run: yarn install
-        
-     - name: build neon dependencies 
-       run: neon build --release
     
-     - name: install node tools
-       run: npm install --global --production windows-build-tools
-
      - name: Rebuild Project
        run: yarn --force
     
