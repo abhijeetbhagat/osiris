@@ -8,9 +8,18 @@ pub struct StreamReader<'a> {
 
 impl<'a> StreamReader<'a> {
     /// Returns a new `StreamReader` instance with an underlying `buf`
+    #[inline]
     pub fn new(buf: &'a [u8]) -> Self {
         StreamReader {
             buf,
+            pos: RefCell::new(0),
+        }
+    }
+
+    #[inline]
+    pub fn clone_from_current_pos(&self) -> Self {
+        StreamReader {
+            buf: &self.buf[*self.pos.borrow()..],
             pos: RefCell::new(0),
         }
     }
@@ -63,6 +72,10 @@ impl<'a> StreamReader<'a> {
         Some(result)
     }
 
+    pub fn peek(&self, n: usize) -> &[u8] {
+        &self.buf[*self.pos.borrow()..*self.pos.borrow() + n]
+    }
+
     /// Moves the cursor in the bytes stream by `n` bytes
     #[inline]
     pub fn skip(&self, n: usize) {
@@ -72,7 +85,7 @@ impl<'a> StreamReader<'a> {
     /// Returns current cursor position in the stream
     #[inline]
     pub fn pos(&self) -> usize {
-        *self.pos.borrow_mut()
+        *self.pos.borrow()
     }
 }
 
@@ -90,5 +103,14 @@ mod tests {
         assert_eq!(rdr.read_u32(), Some(84281096));
         assert_eq!(rdr.pos(), 8);
         assert_eq!(rdr.read_as_str(4), Some("ftyp"));
+    }
+
+    #[test]
+    fn test_cloning() {
+        let reader = StreamReader::new(&[1, 2, 3, 4, 5, 6]);
+        reader.skip(2);
+        assert!(reader.pos() == 2);
+        let reader2 = reader.clone_from_current_pos();
+        assert_eq!(reader2.peek(1), &[3]);
     }
 }
