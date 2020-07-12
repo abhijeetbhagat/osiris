@@ -5,7 +5,7 @@ use crate::parsing::error::ParserError;
 use crate::utils::reader::StreamReader;
 use crossbeam_utils::thread;
 use serde::Serialize;
-use std::sync::{Arc, Mutex};
+use std::sync::mpsc;
 use std::thread as std_thread;
 
 #[derive(Serialize)]
@@ -22,13 +22,13 @@ pub struct Moov {
 impl AtomParse for Moov {
     fn parse(my_size: usize, reader: &StreamReader) -> Result<Self, ParserError> {
         println!("moov: reader pos {} mysize {}", reader.pos(), my_size);
-        //let my_size = my_size + reader.pos() - 8;
         let mut limit = 8;
         println!("moov: mysize {}", my_size);
-        let mut atoms: Arc<Mutex<Vec<Box<dyn erased_serde::Serialize + Send + Sync>>>> =
-            Arc::new(Mutex::new(vec![]));
+        let mut atoms: Vec<Box<dyn erased_serde::Serialize + Send + Sync>> = vec![];
+        let (tx, rx) = mpsc::channel();
 
         thread::scope(|s| {
+            let tx: mpsc::Sender<Box<dyn erased_serde::Serialize + Send + Sync>> = tx;
             while limit < my_size {
                 let (atom_len, atom) = (
                     reader
@@ -43,28 +43,27 @@ impl AtomParse for Moov {
 
                 match atom {
                     "mvhd" => {
-                        let mut atoms = atoms.lock().unwrap();
-                        atoms.push(Box::new(atom_get::<Mvhd>(atom_len, reader).unwrap()));
+                        tx.send(Box::new(atom_get::<Mvhd>(atom_len, reader).unwrap()))
+                            .unwrap();
                         println!("moov: pushed mvhd to atoms");
                         println!("moov: atoms len is {}", atoms.len());
                     }
                     "trak" => {
-                        let mut atoms = atoms.clone();
-
+                        let tx = mpsc::Sender::clone(&tx);
                         let trak_reader = reader.clone_from_current_pos();
                         println!(
                             "moov: trak_reader peeking len and name {:?}",
                             trak_reader.peek(8)
                         );
+
                         s.spawn(move |_| {
                             print!(
                                 "thread id {:?} spawned to parse trak ...",
                                 std_thread::current().id()
                             );
-                            let mut atoms = atoms.lock().unwrap();
-                            atoms.push(Box::new(atom_get::<Trak>(atom_len, &trak_reader).unwrap()));
+                            let trak = Box::new(atom_get::<Trak>(atom_len, &trak_reader).unwrap());
+                            tx.send(trak).unwrap();
                             println!("moov: pushed trak to atoms");
-                            println!("moov: atoms len is {}", atoms.len());
                         });
                         reader.skip(atom_len - 8);
                     }
@@ -77,12 +76,12 @@ impl AtomParse for Moov {
                 println!("moov: atom len: {}, atom: {}", atom_len, atom);
                 limit += atom_len;
             }
-        });
+        })
+        .unwrap();
 
-        let atoms: Vec<Box<dyn erased_serde::Serialize + Send + Sync>> = Arc::try_unwrap(atoms)
-            .unwrap_or_default()
-            .into_inner()
-            .unwrap();
+        for atom in rx {
+            atoms.push(atom);
+        }
         println!("returning moov");
 
         Ok(Moov {
