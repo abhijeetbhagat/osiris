@@ -21,10 +21,8 @@ pub struct Moov {
 
 impl AtomParse for Moov {
     fn parse(my_size: usize, reader: &StreamReader) -> Result<Self, ParserError> {
-        println!("moov: reader pos {} mysize {}", reader.pos(), my_size);
         //let my_size = my_size + reader.pos() - 8;
         let mut limit = 8;
-        println!("moov: mysize {}", my_size);
         let mut atoms: Arc<Mutex<Vec<Box<dyn erased_serde::Serialize + Send + Sync>>>> =
             Arc::new(Mutex::new(vec![]));
 
@@ -45,36 +43,21 @@ impl AtomParse for Moov {
                     "mvhd" => {
                         let mut atoms = atoms.lock().unwrap();
                         atoms.push(Box::new(atom_get::<Mvhd>(atom_len, reader).unwrap()));
-                        println!("moov: pushed mvhd to atoms");
-                        println!("moov: atoms len is {}", atoms.len());
                     }
                     "trak" => {
                         let mut atoms = atoms.clone();
 
                         let trak_reader = reader.clone_from_current_pos();
-                        println!(
-                            "moov: trak_reader peeking len and name {:?}",
-                            trak_reader.peek(8)
-                        );
                         s.spawn(move |_| {
-                            print!(
-                                "thread id {:?} spawned to parse trak ...",
-                                std_thread::current().id()
-                            );
                             let mut atoms = atoms.lock().unwrap();
                             atoms.push(Box::new(atom_get::<Trak>(atom_len, &trak_reader).unwrap()));
-                            println!("moov: pushed trak to atoms");
-                            println!("moov: atoms len is {}", atoms.len());
                         });
                         reader.skip(atom_len - 8);
                     }
                     _ => {
-                        println!("moov: atom {} not supported", atom);
                         reader.skip(atom_len - 8);
-                        println!("moov: reader pos after skipping {}", reader.pos());
                     }
                 }
-                println!("moov: atom len: {}, atom: {}", atom_len, atom);
                 limit += atom_len;
             }
         });
@@ -83,7 +66,6 @@ impl AtomParse for Moov {
             .unwrap_or_default()
             .into_inner()
             .unwrap();
-        println!("returning moov");
 
         Ok(Moov {
             name: "moov".into(),

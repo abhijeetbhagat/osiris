@@ -9,7 +9,14 @@ exclude = ["artifacts.json", "index.node"]
 
 [lib]
 name = "parser"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "lib"]
+
+[dev-dependencies]
+criterion = "0.3.3"
+
+[[bench]]
+name = "parsing"
+harness = false
 
 [build-dependencies]
 neon-build = "0.4.0"

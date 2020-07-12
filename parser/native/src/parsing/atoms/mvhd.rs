@@ -25,22 +25,22 @@ impl AtomParse for Mvhd {
                 Either::Left(
                     reader
                         .read_u32()
-                        .ok_or_else(|| ParserError::NumberConversionError)?
+                        .ok_or_else(|| ParserError::NumberConversionError)?,
                 ),
                 Either::Left(
                     reader
                         .read_u32()
-                        .ok_or_else(|| ParserError::NumberConversionError)?
+                        .ok_or_else(|| ParserError::NumberConversionError)?,
                 ),
                 Either::Left(
                     reader
                         .read_u32()
-                        .ok_or_else(|| ParserError::NumberConversionError)?
+                        .ok_or_else(|| ParserError::NumberConversionError)?,
                 ),
                 Either::Left(
                     reader
                         .read_u32()
-                        .ok_or_else(|| ParserError::NumberConversionError)?
+                        .ok_or_else(|| ParserError::NumberConversionError)?,
                 ),
             )
         } else {
@@ -48,22 +48,22 @@ impl AtomParse for Mvhd {
                 Either::Right(
                     reader
                         .read_u64()
-                        .ok_or_else(|| ParserError::NumberConversionError)?
+                        .ok_or_else(|| ParserError::NumberConversionError)?,
                 ),
                 Either::Right(
                     reader
                         .read_u64()
-                        .ok_or_else(|| ParserError::NumberConversionError)?
+                        .ok_or_else(|| ParserError::NumberConversionError)?,
                 ),
                 Either::Right(
                     reader
                         .read_u64()
-                        .ok_or_else(|| ParserError::NumberConversionError)?
+                        .ok_or_else(|| ParserError::NumberConversionError)?,
                 ),
                 Either::Right(
                     reader
                         .read_u64()
-                        .ok_or_else(|| ParserError::NumberConversionError)?
+                        .ok_or_else(|| ParserError::NumberConversionError)?,
                 ),
             )
         };
@@ -73,8 +73,6 @@ impl AtomParse for Mvhd {
         let next_track_id = reader
             .read_u32()
             .ok_or_else(|| ParserError::NumberConversionError)?;
-
-        println!("mvhd: reader pos {}", reader.pos());
 
         Ok(Mvhd {
             name: "mvhd".into(),

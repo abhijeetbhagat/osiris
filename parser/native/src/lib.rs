@@ -3,7 +3,7 @@ extern crate memmap;
 extern crate serde;
 extern crate serde_derive;
 
-mod parsing;
+pub mod parsing;
 mod utils;
 
 use neon::prelude::*;
