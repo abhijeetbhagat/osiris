@@ -22,7 +22,6 @@ impl AtomParse for Tkhd {
             .ok_or_else(|| ParserError::NumberConversionError)?;
 
         let version = get_version(version_flags);
-        println!("tkhd: version is {}", version);
 
         let (creation_time, modification_time) = if version == 0 {
             (
@@ -88,8 +87,6 @@ impl AtomParse for Tkhd {
         let height = reader
             .read_u32()
             .ok_or_else(|| ParserError::NumberConversionError)?;
-
-        println!("tkhd: reader pos {}", reader.pos());
 
         Ok(Tkhd {
             name: "tkhd".into(),

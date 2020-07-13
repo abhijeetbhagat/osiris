@@ -21,9 +21,7 @@ pub struct Moov {
 
 impl AtomParse for Moov {
     fn parse(my_size: usize, reader: &StreamReader) -> Result<Self, ParserError> {
-        println!("moov: reader pos {} mysize {}", reader.pos(), my_size);
         let mut limit = 8;
-        println!("moov: mysize {}", my_size);
         let mut atoms: Vec<Box<dyn erased_serde::Serialize + Send + Sync>> = vec![];
         let (tx, rx) = mpsc::channel();
 
@@ -45,35 +43,21 @@ impl AtomParse for Moov {
                     "mvhd" => {
                         tx.send(Box::new(atom_get::<Mvhd>(atom_len, reader).unwrap()))
                             .unwrap();
-                        println!("moov: pushed mvhd to atoms");
-                        println!("moov: atoms len is {}", atoms.len());
                     }
                     "trak" => {
                         let tx = mpsc::Sender::clone(&tx);
                         let trak_reader = reader.clone_from_current_pos();
-                        println!(
-                            "moov: trak_reader peeking len and name {:?}",
-                            trak_reader.peek(8)
-                        );
 
                         s.spawn(move |_| {
-                            print!(
-                                "thread id {:?} spawned to parse trak ...",
-                                std_thread::current().id()
-                            );
                             let trak = Box::new(atom_get::<Trak>(atom_len, &trak_reader).unwrap());
                             tx.send(trak).unwrap();
-                            println!("moov: pushed trak to atoms");
                         });
                         reader.skip(atom_len - 8);
                     }
                     _ => {
-                        println!("moov: atom {} not supported", atom);
                         reader.skip(atom_len - 8);
-                        println!("moov: reader pos after skipping {}", reader.pos());
                     }
                 }
-                println!("moov: atom len: {}, atom: {}", atom_len, atom);
                 limit += atom_len;
             }
         })
@@ -82,7 +66,6 @@ impl AtomParse for Moov {
         for atom in rx {
             atoms.push(atom);
         }
-        println!("returning moov");
 
         Ok(Moov {
             name: "moov".into(),
