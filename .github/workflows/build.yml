@@ -41,7 +41,7 @@ jobs:
        run: yarn --force
      
      - name: Run Unit test Cases for rust code
-       run: cargo test --release  
+       run: cargo test --manifest-path parser/native/Cargo.toml --release  
     
       
 
