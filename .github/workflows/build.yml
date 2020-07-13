@@ -40,8 +40,8 @@ jobs:
      - name: Rebuild Project
        run: yarn --force
      
-     -name: Run Unit test Cases for rust code
-      run: cargo test --release  
+     - name: Run Unit test Cases for rust code
+       run: cargo test --release  
     
       
 
