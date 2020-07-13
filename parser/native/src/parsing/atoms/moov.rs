@@ -1,12 +1,11 @@
 extern crate crossbeam_utils;
 use crate::parsing::atoms::parse::{atom_get, AtomParse};
-use crate::parsing::atoms::{mvhd::Mvhd, trak::Trak};
+use crate::parsing::atoms::{mvhd::Mvhd, trak::Trak, udta::Udta};
 use crate::parsing::error::ParserError;
 use crate::utils::reader::StreamReader;
 use crossbeam_utils::thread;
 use serde::Serialize;
 use std::sync::mpsc;
-use std::thread as std_thread;
 
 #[derive(Serialize)]
 pub struct Moov {
@@ -54,9 +53,11 @@ impl AtomParse for Moov {
                         });
                         reader.skip(atom_len - 8);
                     }
-                    _ => {
-                        reader.skip(atom_len - 8);
+                    "udta" => {
+                        tx.send(Box::new(atom_get::<Udta>(atom_len, reader).unwrap()))
+                            .unwrap();
                     }
+                    _ => reader.skip(atom_len - 8),
                 }
                 limit += atom_len;
             }
