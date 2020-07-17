@@ -12,10 +12,11 @@ pub struct Elst {
     pub media_times: Vec<Either<u32, u64>>,
     pub media_rate_integers: Vec<u16>,
     pub media_rate_fractions: Vec<u16>,
+    len: usize,
 }
 
 impl AtomParse for Elst {
-    fn parse(_: usize, reader: &StreamReader) -> Result<Self, ParserError> {
+    fn parse(my_size: usize, reader: &StreamReader) -> Result<Self, ParserError> {
         let version_flags: u32 = reader
             .read_u32()
             .ok_or_else(|| ParserError::NumberConversionError)?;
@@ -81,6 +82,7 @@ impl AtomParse for Elst {
             media_times,
             media_rate_integers,
             media_rate_fractions,
+            len: my_size,
         })
     }
 }
