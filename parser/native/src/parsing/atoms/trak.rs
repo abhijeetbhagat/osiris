@@ -1,7 +1,7 @@
 extern crate serde;
 extern crate serde_derive;
 use crate::parsing::atoms::parse::{atom_get, AtomParse};
-use crate::parsing::atoms::{edts::Edts, tkhd::Tkhd};
+use crate::parsing::atoms::{edts::Edts, mdia::Mdia, tkhd::Tkhd};
 use crate::parsing::error::ParserError;
 use crate::utils::reader::StreamReader;
 use serde::Serialize;
@@ -31,6 +31,7 @@ impl AtomParse for Trak {
             match atom {
                 "tkhd" => atoms.push(Box::new(atom_get::<Tkhd>(atom_len, reader)?)),
                 "edts" => atoms.push(Box::new(atom_get::<Edts>(atom_len, reader)?)),
+                "mdia" => atoms.push(Box::new(atom_get::<Mdia>(atom_len, reader)?)),
                 _ => {
                     reader.skip(atom_len - 8);
                 }

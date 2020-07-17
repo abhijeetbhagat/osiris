@@ -6,6 +6,7 @@ mod elst;
 mod free;
 mod ftyp;
 mod mdat;
+mod mdia;
 mod moov;
 mod mvhd;
 pub mod parse;
