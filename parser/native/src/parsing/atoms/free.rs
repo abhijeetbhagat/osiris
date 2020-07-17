@@ -6,6 +6,7 @@ use serde::Serialize;
 #[derive(Serialize)]
 pub struct Free {
     pub name: String,
+    len: usize,
 }
 
 impl AtomParse for Free {
@@ -14,6 +15,7 @@ impl AtomParse for Free {
 
         Ok(Free {
             name: "mvhd".into(),
+            len: my_size,
         })
     }
 }

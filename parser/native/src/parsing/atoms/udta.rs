@@ -6,6 +6,7 @@ use serde::Serialize;
 #[derive(Serialize)]
 pub struct Udta {
     pub name: String,
+    len: usize,
 }
 
 impl AtomParse for Udta {
@@ -14,6 +15,7 @@ impl AtomParse for Udta {
 
         Ok(Udta {
             name: "udta".into(),
+            len: my_size,
         })
     }
 }
