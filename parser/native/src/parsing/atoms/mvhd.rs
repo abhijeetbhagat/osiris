@@ -12,10 +12,11 @@ pub struct Mvhd {
     pub timescale: Either<u32, u64>,
     pub duration: Either<u32, u64>,
     pub next_track_id: u32,
+    len: usize,
 }
 
 impl AtomParse for Mvhd {
-    fn parse(_: usize, reader: &StreamReader) -> Result<Self, ParserError> {
+    fn parse(my_size: usize, reader: &StreamReader) -> Result<Self, ParserError> {
         let version: u32 = reader
             .read_u32()
             .ok_or_else(|| ParserError::NumberConversionError)?;
@@ -81,6 +82,7 @@ impl AtomParse for Mvhd {
             timescale,
             duration,
             next_track_id,
+            len: my_size,
         })
     }
 }

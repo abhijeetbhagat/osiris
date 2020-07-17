@@ -1,19 +1,19 @@
 extern crate serde;
 extern crate serde_derive;
+use crate::parsing::atoms::elst::Elst;
 use crate::parsing::atoms::parse::{atom_get, AtomParse};
-use crate::parsing::atoms::{edts::Edts, mdia::Mdia, tkhd::Tkhd};
 use crate::parsing::error::ParserError;
 use crate::utils::reader::StreamReader;
 use serde::Serialize;
 
 #[derive(Serialize)]
-pub struct Trak {
+pub struct Edts {
     name: String,
     len: usize,
     atoms: Vec<Box<dyn erased_serde::Serialize + Send + Sync>>,
 }
 
-impl AtomParse for Trak {
+impl AtomParse for Edts {
     fn parse(my_size: usize, reader: &StreamReader) -> Result<Self, ParserError> {
         let mut atoms: Vec<Box<dyn erased_serde::Serialize + Send + Sync>> = vec![];
         let mut limit = 8;
@@ -29,9 +29,7 @@ impl AtomParse for Trak {
             );
 
             match atom {
-                "tkhd" => atoms.push(Box::new(atom_get::<Tkhd>(atom_len, reader)?)),
-                "edts" => atoms.push(Box::new(atom_get::<Edts>(atom_len, reader)?)),
-                "mdia" => atoms.push(Box::new(atom_get::<Mdia>(atom_len, reader)?)),
+                "elst" => atoms.push(Box::new(atom_get::<Elst>(atom_len, reader)?)),
                 _ => {
                     reader.skip(atom_len - 8);
                 }
@@ -39,8 +37,8 @@ impl AtomParse for Trak {
             limit += atom_len;
         }
 
-        Ok(Trak {
-            name: "trak".into(),
+        Ok(Edts {
+            name: "edts".into(),
             len: my_size,
             atoms,
         })

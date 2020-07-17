@@ -13,10 +13,11 @@ pub struct Tkhd {
     pub duration: Either<u32, u64>,
     pub width: u32,
     pub height: u32,
+    len: usize,
 }
 
 impl AtomParse for Tkhd {
-    fn parse(_: usize, reader: &StreamReader) -> Result<Self, ParserError> {
+    fn parse(my_size: usize, reader: &StreamReader) -> Result<Self, ParserError> {
         let version_flags: u32 = reader
             .read_u32()
             .ok_or_else(|| ParserError::NumberConversionError)?;
@@ -96,6 +97,7 @@ impl AtomParse for Tkhd {
             track_id,
             width,
             height,
+            len: my_size,
         })
     }
 }

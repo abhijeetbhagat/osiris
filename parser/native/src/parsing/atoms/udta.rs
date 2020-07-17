@@ -4,17 +4,17 @@ use crate::utils::reader::StreamReader;
 use serde::Serialize;
 
 #[derive(Serialize)]
-pub struct Free {
+pub struct Udta {
     pub name: String,
     len: usize,
 }
 
-impl AtomParse for Free {
+impl AtomParse for Udta {
     fn parse(my_size: usize, reader: &StreamReader) -> Result<Self, ParserError> {
         reader.skip(my_size - 8);
 
-        Ok(Free {
-            name: "mvhd".into(),
+        Ok(Udta {
+            name: "udta".into(),
             len: my_size,
         })
     }
@@ -22,10 +22,10 @@ impl AtomParse for Free {
 
 #[cfg(test)]
 mod tests {
-    use super::Free;
+    use super::Udta;
     use crate::parsing::atoms::parse::AtomParse;
     use crate::utils::reader::StreamReader;
 
     #[test]
-    fn parse_free() {}
+    fn parse_udta() {}
 }

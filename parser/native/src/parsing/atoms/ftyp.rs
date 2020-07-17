@@ -9,6 +9,7 @@ pub struct Ftyp {
     major_brand: String,
     minor_brand: u32,
     compatible_brands: Vec<String>,
+    len: usize,
 }
 
 impl AtomParse for Ftyp {
@@ -36,6 +37,7 @@ impl AtomParse for Ftyp {
             major_brand,
             minor_brand,
             compatible_brands,
+            len: my_size,
         })
     }
 }
