@@ -19,6 +19,7 @@ dragFile.addEventListener('drop', function (e) {
     let result = [];
     transform(tree.atoms, result);
 
+    $('.header').hide();
     $('#container').jstree({
         'core': {
             data: result
