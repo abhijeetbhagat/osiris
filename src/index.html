@@ -2,20 +2,32 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <title>osiris</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="../node_modules/jstree/dist/themes/default/style.min.css">
+  <meta charset="UTF-8">
+  <title>osiris</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../node_modules/jstree/dist/themes/default/style.min.css">
+  <script src="https://kit.fontawesome.com/1c9144b004.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <div class="window" id="drag-file">
-        <h1 class="header" style="text-align:center">Open file using file menu or drop it here</h1>
-        <div id="container" style="background-color: snow; width: 10%;"></div>
-        <script>
-            require('./index.js')
-        </script>
+  <div id="menu-bar">
+    <div class="left" role="menu">
+      <button class="menubar-btn" id="menu-btn"><i class="fas fa-bars"></i></button>
+      <h5>osiris</h5>
     </div>
+    <div class="right">
+      <button class="menubar-btn" id="minimize-btn"><i class="fas fa-window-minimize"></i></button>
+      <button class="menubar-btn" id="max-unmax-btn"><i class="far fa-square"></i></button>
+      <button class="menubar-btn" id="close-btn"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+  <div class="container" id="drag-file">
+    <h1 class="header" style="text-align:center">Open file using file menu or drop it here</h1>
+    <div id="window" style="background-color: snow; width: 100%;"></div>
+  </div>
+  <script>
+    require('./index.js')
+  </script>
 </body>
 
 </html>
