@@ -1,9 +1,9 @@
-use std::cell::RefCell;
+use std::cell::Cell;
 use std::convert::TryInto;
 /// An abstraction over reading strings/integers from a stream of bytes
 pub struct StreamReader<'a> {
     buf: &'a [u8],
-    pos: RefCell<usize>,
+    pos: Cell<usize>,
 }
 
 impl<'a> StreamReader<'a> {
@@ -12,80 +12,79 @@ impl<'a> StreamReader<'a> {
     pub fn new(buf: &'a [u8]) -> Self {
         StreamReader {
             buf,
-            pos: RefCell::new(0),
+            pos: Cell::new(0),
         }
     }
 
     #[inline]
     pub fn clone_from_current_pos(&self) -> Self {
         StreamReader {
-            buf: &self.buf[*self.pos.borrow()..],
-            pos: RefCell::new(0),
+            buf: &self.buf[self.pos.get()..],
+            pos: Cell::new(0),
         }
     }
 
     /// Reads the next byte from cursor position
     pub fn read_u8(&self) -> Option<u8> {
-        let byte = self.buf[*self.pos.borrow()];
-        *self.pos.borrow_mut() += 1;
+        let byte = self.buf[self.pos.get()];
+        self.pos.set(self.pos.get() + 1);
         Some(byte)
     }
 
     /// Reads the next 2 bytes from cursor position into an u16
     pub fn read_u16(&self) -> Option<u16> {
         let result = u16::from_be_bytes(
-            self.buf[*self.pos.borrow()..*self.pos.borrow() + 2]
+            self.buf[self.pos.get()..self.pos.get() + 2]
                 .try_into()
                 .unwrap(),
         );
-        *self.pos.borrow_mut() += 2;
+        self.pos.set(self.pos.get() + 2);
         Some(result)
     }
 
     /// Reads the next 4 bytes from cursor position into an u32
     pub fn read_u32(&self) -> Option<u32> {
         let result = u32::from_be_bytes(
-            self.buf[*self.pos.borrow()..*self.pos.borrow() + 4]
+            self.buf[self.pos.get()..self.pos.get() + 4]
                 .try_into()
                 .unwrap(),
         );
-        *self.pos.borrow_mut() += 4;
+        self.pos.set(self.pos.get() + 4);
         Some(result)
     }
 
     /// Reads the next 8 bytes from cursor position into an u64
     pub fn read_u64(&self) -> Option<u64> {
         let result = u64::from_be_bytes(
-            self.buf[*self.pos.borrow()..*self.pos.borrow() + 8]
+            self.buf[self.pos.get()..self.pos.get() + 8]
                 .try_into()
                 .unwrap(),
         );
-        *self.pos.borrow_mut() += 8;
+        self.pos.set(self.pos.get() + 8);
         Some(result)
     }
 
     /// Converts `n` bytes from cursor position into an `&str`
     pub fn read_as_str(&self, n: usize) -> Option<&str> {
-        let result =
-            std::str::from_utf8(&self.buf[*self.pos.borrow()..*self.pos.borrow() + n]).unwrap();
-        *self.pos.borrow_mut() += n;
+        let result = std::str::from_utf8(&self.buf[self.pos.get()..self.pos.get() + n]).unwrap();
+        self.pos.set(self.pos.get() + n);
         Some(result)
     }
 
     pub fn peek(&self, n: usize) -> &[u8] {
-        &self.buf[*self.pos.borrow()..*self.pos.borrow() + n]
+        &self.buf[self.pos.get()..self.pos.get() + n]
     }
 
     /// Moves the cursor in the bytes stream by `n` bytes
     #[inline]
     pub fn skip(&self, n: usize) {
-        *self.pos.borrow_mut() += n;
+        self.pos.set(self.pos.get() + n);
     }
 
     /// Returns current cursor position in the stream
     #[inline]
     pub fn pos(&self) -> usize {
-        *self.pos.borrow()
+        self.pos.get()
     }
 }
 
