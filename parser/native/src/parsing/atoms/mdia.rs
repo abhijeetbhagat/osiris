@@ -1,7 +1,7 @@
 extern crate serde;
 extern crate serde_derive;
-use crate::parsing::atoms::mdhd::Mdhd;
 use crate::parsing::atoms::parse::{atom_get, AtomParse};
+use crate::parsing::atoms::{hdlr::Hdlr, mdhd::Mdhd};
 use crate::parsing::error::ParserError;
 use crate::utils::reader::StreamReader;
 use serde::Serialize;
@@ -30,7 +30,7 @@ impl AtomParse for Mdia {
 
             match atom {
                 "mdhd" => atoms.push(Box::new(atom_get::<Mdhd>(atom_len, reader)?)),
-                //"hdlr" => atoms.push(Box::new(atom_get::<Hdlr>(atom_len, reader)?)),
+                "hdlr" => atoms.push(Box::new(atom_get::<Hdlr>(atom_len, reader)?)),
                 //"minf" => atoms.push(Box::new(atom_get::<Minf>(atom_len, reader)?)),
                 _ => {
                     reader.skip(atom_len - 8);
